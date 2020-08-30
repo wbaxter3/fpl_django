@@ -13,14 +13,14 @@ from prettytable import PrettyTable
 
 
 
-def home(request):
+async def home(request):
 
 
     async with aiohttp.ClientSession() as session:
         fpl = FPL(session)
-        players = await fpl.get_players()
+        players = await fpl.get_players(return_json=True)
 
-    print(players)
+    players = sorted(players, key=lambdax: x.goals_scored + x.assists, reverse=True)
     # top_performers = sorted(
     #     players, key=lambda x: x.goals_scored + x.assists, reverse=True)
     #
@@ -36,11 +36,11 @@ def home(request):
     #
     #
     # print(player_table)
-    return render (request, 'home.html')
-
-
-async def home(request):
+    return render (request, 'home.html', {'players':players})
 
 
 
-/sync_home = async_to_sync(home)
+
+
+
+sync_home = async_to_sync(home)
